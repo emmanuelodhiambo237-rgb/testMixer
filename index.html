@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Johnstone Odhiambo | Mixologist</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="imageModal" class="modal">
+        <span class="close-modal">&times;</span>
+        <img class="modal-content" id="modalImg">
+    </div>
+
+    <header class="mobile-header">
+        <h1>Johnstone Odhiambo</h1>
+    </header>
+
+    <div class="layout-wrapper">
+        
+        <aside class="left-panel">
+            <div class="profile-section">
+                <img src="images/profilepicture.jpg" alt="Profile Picture" class="profile-pic">
+                <h2>Johnstone Odhiambo</h2>
+                <p class="subtitle">Mixologist Portfolio</p>
+            </div>
+            
+            <div class="image-grid">
+                <img src="images/side image1.jpg" alt="Mixology 1" class="grid-image" loading="lazy">
+                <img src="images/side image2.jpg" alt="Mixology 2" class="grid-image" loading="lazy">
+                <img src="images/side image3.jpg" alt="Mixology 3" class="grid-image" loading="lazy">
+                <img src="images/side image4.jpg" alt="Mixology 4" class="grid-image" loading="lazy">
+                <img src="images/side image5.jpg" alt="Mixology 5" class="grid-image" loading="lazy">
+                <img src="images/side image6.jpg" alt="Mixology 6" class="grid-image" loading="lazy">
+                <img src="images/side image7.jpg" alt="Mixology 7" class="grid-image" loading="lazy">
+                <img src="images/side image8.jpg" alt="Mixology 8" class="grid-image" loading="lazy">
+                <img src="images/side image9.jpg" alt="Mixology 9" class="grid-image" loading="lazy">
+                <img src="images/side image10.jpg" alt="Mixology 10" class="grid-image" loading="lazy">
+            </div>
+        </aside>
+
+        <div class="center-wrapper">
+            <main class="center-panel" id="video-container">
+                <div class="video-wrapper" data-index="0">
+                    <video src="videos/Video1.mp4" loop muted playsinline preload="metadata"></video>
+                </div>
+                <div class="video-wrapper" data-index="1">
+                    <video src="videos/Video2.mp4" loop muted playsinline preload="metadata"></video>
+                </div>
+                <div class="video-wrapper" data-index="2">
+                    <video src="videos/Video3.mp4" loop muted playsinline preload="metadata"></video>
+                </div>
+                <div class="video-wrapper" data-index="3">
+                    <video src="videos/Video4.mp4" loop muted playsinline preload="metadata"></video>
+                </div>
+                <div class="video-wrapper" data-index="4">
+                    <video src="videos/Video5.mp4" loop muted playsinline preload="metadata"></video>
+                </div>
+            </main>
+            
+            <div class="nav-arrows">
+                <button id="btn-up" class="arrow-btn">
+                    <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+                </button>
+                <button id="btn-down" class="arrow-btn">
+                    <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <aside class="right-panel">
+            <div class="description-box">
+                <h2 id="dynamic-title">Loading...</h2>
+                <div class="divider"></div>
+                <p id="dynamic-text">Scroll to view cocktails.</p>
+            </div>
+        </aside>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
