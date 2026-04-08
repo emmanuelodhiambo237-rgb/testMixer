@@ -49,6 +49,13 @@ body {
     border: 3px solid var(--accent-purple);
     box-shadow: 0 0 15px var(--accent-glow);
     margin-bottom: 10px;
+    transition: transform 0.3s ease;
+}
+
+.profile-pic:hover, .profile-pic:active,
+.mobile-profile-pic:hover, .mobile-profile-pic:active {
+    cursor: pointer;
+    transform: scale(1.05);
 }
 
 .profile-section h2 { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
@@ -65,7 +72,7 @@ body {
 
 .grid-image {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Perfect Squares */
+    aspect-ratio: 1 / 1; 
     object-fit: cover;
     border-radius: 8px;
     cursor: pointer;
@@ -73,7 +80,6 @@ body {
     transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Glowing only on Touch/Hover */
 .grid-image:hover, .grid-image:active {
     transform: scale(1.05);
     border-color: var(--accent-purple);
@@ -103,7 +109,6 @@ body {
 .close-grid { background: none; border: none; color: var(--text-light); font-size: 40px; cursor: pointer; transition: color 0.3s ease; }
 .close-grid:hover { color: var(--accent-purple); }
 
-/* --- RECTANGULAR MOBILE BUTTON --- */
 .view-images-btn {
     background-color: #12121a; color: var(--text-light);
     border: 1px solid var(--accent-purple); box-shadow: 0 0 12px var(--accent-glow);
@@ -123,8 +128,12 @@ body {
 .center-panel { -ms-overflow-style: none; scrollbar-width: none; }
 
 .video-wrapper {
-    position: relative; /* Essential for sound button placement */
-    height: 100vh; width: 100%; scroll-snap-align: start; 
+    position: relative; 
+    height: 100vh; 
+    width: 100%; 
+    scroll-snap-align: start; 
+    /* Anti-Momentum Scroll Fix */
+    scroll-snap-stop: always; 
     display: flex; justify-content: center; align-items: center;
     will-change: transform; transform: translateZ(0); contain: strict; 
 }
@@ -189,10 +198,24 @@ video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
     background-color: rgba(0,0,0,0.4);
     border-radius: 50%;
     z-index: 1001;
+    display: inline-block;
 }
 .prev-modal { left: 30px; }
 .next-modal { right: 30px; }
 .prev-modal:hover, .next-modal:hover { color: var(--accent-purple); background-color: rgba(0,0,0,0.8); }
+
+/* ROUND PROFILE PREVIEW */
+.modal-content.profile-preview {
+    border-radius: 50%; 
+    object-fit: cover; 
+    aspect-ratio: 1/1; 
+    max-width: 80vmin; 
+    max-height: 80vmin;
+    width: 80vmin; 
+    height: 80vmin;
+    margin: auto; 
+    box-shadow: 0 0 30px var(--accent-glow); 
+}
 
 /* --- MOBILE RESPONSIVE LAYOUT --- */
 @media screen and (max-width: 768px) {
@@ -205,7 +228,7 @@ video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
         background-color: var(--bg-dark); border-bottom: 1px solid var(--accent-purple);
     }
     .mobile-profile-group { display: flex; align-items: center; }
-    .mobile-profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-purple); box-shadow: 0 0 10px var(--accent-glow); margin-right: 10px; }
+    .mobile-profile-pic { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-purple); box-shadow: 0 0 10px var(--accent-glow); margin-right: 10px; transition: transform 0.3s ease; }
     .mobile-header-text { display: flex; flex-direction: column; justify-content: center; }
     .mobile-header h1 { font-size: 0.9rem; color: var(--text-light); text-transform: uppercase; margin-bottom: 2px; }
     .mobile-subtitle { color: var(--accent-purple); font-size: 0.7rem; }
@@ -225,28 +248,4 @@ video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
     
     .prev-modal { left: 10px; font-size: 25px; padding: 10px; }
     .next-modal { right: 10px; font-size: 25px; padding: 10px; }
-}
-
-/* Ensure profile pictures show pointer cursor on hover/active */
-.profile-pic:hover, .profile-pic:active,
-.mobile-profile-pic:hover, .mobile-profile-pic:active {
-    cursor: pointer;
-}
-
-/* CAROUSEL ARROWS DISPLAY (ensure consistent restorative state for JS) */
-.prev-modal, .next-modal {
-    display: inline-block; /* Work well with padding, visibility control */
-}
-
-/* --- ROUND PROFILE PREVIEW (Distinct from gallery view) --- */
-.modal-content.profile-preview {
-    border-radius: 50%; /* Make it perfectly round */
-    object-fit: cover; /* Fill the circle crop nicely */
-    aspect-ratio: 1/1; /* Force perfect square before round border */
-    max-width: 80vmin; /* Ensure circle stays centered and within screen, cap diameter */
-    max-height: 80vmin;
-    width: 80vmin; /* Diameter capped at smaller dimension percentage, centered */
-    height: 80vmin;
-    margin: auto; /* Centering */
-    box-shadow: 0 0 30px var(--accent-glow); /* Apply accent glow */
 }
