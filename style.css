@@ -226,3 +226,27 @@ video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
     .prev-modal { left: 10px; font-size: 25px; padding: 10px; }
     .next-modal { right: 10px; font-size: 25px; padding: 10px; }
 }
+
+/* Ensure profile pictures show pointer cursor on hover/active */
+.profile-pic:hover, .profile-pic:active,
+.mobile-profile-pic:hover, .mobile-profile-pic:active {
+    cursor: pointer;
+}
+
+/* CAROUSEL ARROWS DISPLAY (ensure consistent restorative state for JS) */
+.prev-modal, .next-modal {
+    display: inline-block; /* Work well with padding, visibility control */
+}
+
+/* --- ROUND PROFILE PREVIEW (Distinct from gallery view) --- */
+.modal-content.profile-preview {
+    border-radius: 50%; /* Make it perfectly round */
+    object-fit: cover; /* Fill the circle crop nicely */
+    aspect-ratio: 1/1; /* Force perfect square before round border */
+    max-width: 80vmin; /* Ensure circle stays centered and within screen, cap diameter */
+    max-height: 80vmin;
+    width: 80vmin; /* Diameter capped at smaller dimension percentage, centered */
+    height: 80vmin;
+    margin: auto; /* Centering */
+    box-shadow: 0 0 30px var(--accent-glow); /* Apply accent glow */
+}
