@@ -2,7 +2,6 @@ backend:
   name: github
   repo: emmanuelodhiambo237-rgb/testMixer
   branch: main
-  # This is the official, stable Sveltia bridge
   base_url: https://auth.sveltia.org
   auth_endpoint: /auth
 
@@ -12,4 +11,19 @@ public_folder: "images"
 collections:
   - name: "portfolio_data"
     label: "Portfolio Editor"
-# ... (leave everything else exactly as it is)
+    files:
+      - file: "content.json"
+        label: "Edit Website Content"
+        name: "content"
+        fields:
+          - label: "Gallery Images"
+            name: "gallery"
+            widget: "list"
+            field: { label: "Image", name: "image", widget: "image" }
+          - label: "Videos"
+            name: "videos"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "text", widget: "text" }
+              - { label: "Video File", name: "videoUrl", widget: "file" }
