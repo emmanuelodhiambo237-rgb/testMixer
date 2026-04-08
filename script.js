@@ -23,7 +23,6 @@ const modalNextBtn = document.querySelector('.next-modal');
 // ==========================================
 let originalWrappers = document.querySelectorAll('.video-wrapper');
 
-// We clone the first and last videos so the scroll never hits a "wall"
 if (originalWrappers.length > 1) {
     const firstClone = originalWrappers[0].cloneNode(true);
     const lastClone = originalWrappers[originalWrappers.length - 1].cloneNode(true);
@@ -31,11 +30,9 @@ if (originalWrappers.length > 1) {
     centerPanel.appendChild(firstClone);
     centerPanel.insertBefore(lastClone, originalWrappers[0]);
 
-    // Start position on the REAL first video (skipping the top clone)
     centerPanel.scrollTop = centerPanel.clientHeight;
 }
 
-// Select ALL wrappers (including the new clones) so everything works
 const allVideoWrappers = document.querySelectorAll('.video-wrapper');
 
 // ==========================================
@@ -50,13 +47,11 @@ centerPanel.addEventListener('scroll', () => {
     const itemHeight = centerPanel.clientHeight;
     const maxScroll = centerPanel.scrollHeight - itemHeight;
 
-    // If user scrolls up to the top clone, teleport to the bottom
     if (centerPanel.scrollTop === 0) {
         centerPanel.style.scrollSnapType = 'none';
         centerPanel.scrollTop = maxScroll - itemHeight; 
         requestAnimationFrame(() => { centerPanel.style.scrollSnapType = 'y mandatory'; });
     }
-    // If user scrolls down to the bottom clone, teleport to the top
     else if (centerPanel.scrollTop >= maxScroll - 2) { 
         centerPanel.style.scrollSnapType = 'none';
         centerPanel.scrollTop = itemHeight; 
