@@ -12,7 +12,6 @@ const videoDetails = [
 const centerPanel = document.getElementById('video-container');
 const titleElement = document.getElementById('dynamic-title');
 const textElement = document.getElementById('dynamic-text');
-const videoWrappers = document.querySelectorAll('.video-wrapper');
 
 const profilePicDesktop = document.querySelector('.left-panel .profile-pic');
 const profilePicMobile = document.querySelector('.mobile-header .mobile-profile-pic');
@@ -20,13 +19,59 @@ const modalPrevBtn = document.querySelector('.prev-modal');
 const modalNextBtn = document.querySelector('.next-modal');
 
 // ==========================================
-// 2. TIKTOK SOUND LOGIC & VIDEO CLICKS
+// 2. THE SEAMLESS INFINITE LOOP (CLONING)
+// ==========================================
+let originalWrappers = document.querySelectorAll('.video-wrapper');
+
+// We clone the first and last videos so the scroll never hits a "wall"
+if (originalWrappers.length > 1) {
+    const firstClone = originalWrappers[0].cloneNode(true);
+    const lastClone = originalWrappers[originalWrappers.length - 1].cloneNode(true);
+
+    centerPanel.appendChild(firstClone);
+    centerPanel.insertBefore(lastClone, originalWrappers[0]);
+
+    // Start position on the REAL first video (skipping the top clone)
+    centerPanel.scrollTop = centerPanel.clientHeight;
+}
+
+// Select ALL wrappers (including the new clones) so everything works
+const allVideoWrappers = document.querySelectorAll('.video-wrapper');
+
+// ==========================================
+// 3. THE SILENT JUMP SCROLL LISTENER
+// ==========================================
+let isResizing = false;
+centerPanel.style.scrollSnapType = 'y mandatory';
+
+centerPanel.addEventListener('scroll', () => {
+    if (isResizing) return;
+    
+    const itemHeight = centerPanel.clientHeight;
+    const maxScroll = centerPanel.scrollHeight - itemHeight;
+
+    // If user scrolls up to the top clone, teleport to the bottom
+    if (centerPanel.scrollTop === 0) {
+        centerPanel.style.scrollSnapType = 'none';
+        centerPanel.scrollTop = maxScroll - itemHeight; 
+        requestAnimationFrame(() => { centerPanel.style.scrollSnapType = 'y mandatory'; });
+    }
+    // If user scrolls down to the bottom clone, teleport to the top
+    else if (centerPanel.scrollTop >= maxScroll - 2) { 
+        centerPanel.style.scrollSnapType = 'none';
+        centerPanel.scrollTop = itemHeight; 
+        requestAnimationFrame(() => { centerPanel.style.scrollSnapType = 'y mandatory'; });
+    }
+});
+
+// ==========================================
+// 4. TIKTOK SOUND LOGIC & VIDEO CLICKS
 // ==========================================
 let globalMuted = true;
 const mutedIcon = `<svg viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>`;
 const unmutedIcon = `<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>`;
 
-videoWrappers.forEach(wrapper => {
+allVideoWrappers.forEach(wrapper => {
     const video = wrapper.querySelector('video');
     const soundBtn = wrapper.querySelector('.sound-btn');
     
@@ -50,11 +95,31 @@ videoWrappers.forEach(wrapper => {
 });
 
 // ==========================================
-// 3. ROCK-SOLID NATIVE SCROLL OBSERVER
+// 5. WINDOW RESIZE PROTECTOR
 // ==========================================
-// Ensure CSS scroll snapping is on permanently
-centerPanel.style.scrollSnapType = 'y mandatory';
+let resizeTimer;
+window.addEventListener('resize', () => {
+    isResizing = true;
+    centerPanel.style.scrollSnapType = 'none';
+    clearTimeout(resizeTimer);
+    
+    resizeTimer = setTimeout(() => {
+        isResizing = false;
+        centerPanel.style.scrollSnapType = 'y mandatory';
+        
+        allVideoWrappers.forEach(wrapper => {
+            const video = wrapper.querySelector('video');
+            const rect = wrapper.getBoundingClientRect();
+            if (rect.top >= -rect.height/2 && rect.top <= rect.height/2) {
+                video.play().catch(e => console.log("Waiting for user tap"));
+            }
+        });
+    }, 200);
+});
 
+// ==========================================
+// 6. ROCK SOLID VIDEO OBSERVER
+// ==========================================
 const observerOptions = { root: centerPanel, threshold: 0.6 };
 
 const videoObserver = new IntersectionObserver((entries) => {
@@ -64,7 +129,7 @@ const videoObserver = new IntersectionObserver((entries) => {
 
         if (entry.isIntersecting) {
             video.muted = globalMuted;
-            video.play().catch(e => console.log("Browser needs user interaction to autoplay."));
+            video.play().catch(e => console.log("Autoplay blocked until user taps"));
             
             titleElement.style.opacity = 0;
             textElement.style.opacity = 0;
@@ -84,10 +149,10 @@ const videoObserver = new IntersectionObserver((entries) => {
     });
 }, observerOptions);
 
-videoWrappers.forEach(wrapper => videoObserver.observe(wrapper));
+allVideoWrappers.forEach(wrapper => videoObserver.observe(wrapper));
 
 // ==========================================
-// 4. LOOPING IMAGE CAROUSEL & MODAL
+// 7. LOOPING IMAGE CAROUSEL & MODAL
 // ==========================================
 const mobileViewBtn = document.getElementById('mobileViewBtn');
 const gridOverlay = document.getElementById('gridOverlay');
@@ -162,7 +227,7 @@ if(closeBtn) closeBtn.addEventListener("click", closeModalDirectly);
 modal.addEventListener("click", (e) => { if (e.target === modal) closeModalDirectly(); });
 
 // ==========================================
-// 5. NAVIGATION ARROWS
+// 8. NAVIGATION ARROWS
 // ==========================================
 const btnUp = document.getElementById('btn-up');
 const btnDown = document.getElementById('btn-down');
