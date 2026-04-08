@@ -29,24 +29,19 @@ window.addEventListener('resize', () => {
         isResizing = false;
         centerPanel.style.scrollSnapType = 'y mandatory';
         
-        // BUG FIX: Force the browser to re-check and play the current video 
-        // after you finish resizing the window so it doesn't stay stuck!
         videoWrappers.forEach(wrapper => {
             const video = wrapper.querySelector('video');
             const rect = wrapper.getBoundingClientRect();
-            // If the video is taking up at least half the screen, play it
             if (rect.top >= -rect.height/2 && rect.top <= rect.height/2) {
                 video.play();
             }
         });
-        
     }, 200);
 });
 
 // ==========================================
 // 3. ENDLESS LOOP SCROLL LOGIC
 // ==========================================
-
 window.addEventListener('load', () => {
     centerPanel.style.scrollSnapType = 'none';
     centerPanel.prepend(centerPanel.lastElementChild);
@@ -54,9 +49,8 @@ window.addEventListener('load', () => {
     centerPanel.style.scrollSnapType = 'y mandatory';
 });
 
-// The Teleporter
 centerPanel.addEventListener('scroll', () => {
-    if (isResizing) return; // Keep the teleporter frozen during resize so it doesn't lag
+    if (isResizing) return; 
 
     const itemHeight = centerPanel.clientHeight;
 
@@ -78,11 +72,9 @@ centerPanel.addEventListener('scroll', () => {
 // ==========================================
 // 4. VIDEO OBSERVER
 // ==========================================
-
 const observerOptions = { root: centerPanel, threshold: 0.6 };
 
 const videoObserver = new IntersectionObserver((entries) => {
-    // BUG FIX: Removed the line that was completely blocking the video during resize
     entries.forEach(entry => {
         const video = entry.target.querySelector('video');
         const index = entry.target.getAttribute('data-index');
@@ -112,12 +104,31 @@ videoWrappers.forEach(wrapper => {
 });
 
 // ==========================================
-// 5. IMAGE MODAL (LIGHTBOX)
+// 5. MOBILE GALLERY OVERLAY & IMAGE MODAL
 // ==========================================
+const mobileViewBtn = document.getElementById('mobileViewBtn');
+const gridOverlay = document.getElementById('gridOverlay');
+const closeGridBtn = document.getElementById('closeGridBtn');
+
+// Open the grid overlay smoothly (Mobile Only)
+if (mobileViewBtn) {
+    mobileViewBtn.addEventListener('click', () => {
+        gridOverlay.classList.add('active');
+    });
+}
+
+// Close the grid overlay smoothly
+if (closeGridBtn) {
+    closeGridBtn.addEventListener('click', () => {
+        gridOverlay.classList.remove('active');
+    });
+}
+
+// Lightbox Logic (Applies to Desktop Sidebar images AND Mobile Overlay images)
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("modalImg");
 const closeBtn = document.querySelector(".close-modal");
-const gridImages = document.querySelectorAll(".grid-image");
+const gridImages = document.querySelectorAll(".grid-image"); // Selects all 20 images
 
 gridImages.forEach(img => {
     img.addEventListener("click", function() {
