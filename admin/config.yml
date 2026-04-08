@@ -2,6 +2,9 @@ backend:
   name: github
   repo: emmanuelodhiambo237-rgb/testMixer
   branch: main
+  # This line replaces the need for Netlify Identity!
+  base_url: https://api.sveltia.org
+  auth_endpoint: /auth
 
 media_folder: "images"
 public_folder: "images"
