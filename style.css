@@ -116,7 +116,6 @@ body {
     background-color: var(--accent-purple); box-shadow: 0 0 20px var(--accent-glow); transform: translateY(-2px);
 }
 
-
 /* --- CENTER PANEL (Videos) --- */
 .center-wrapper { position: relative; height: 100vh; width: 100%; background-color: #000; }
 .center-panel { height: 100%; width: 100%; overflow-y: scroll; scroll-snap-type: y mandatory; }
@@ -124,11 +123,34 @@ body {
 .center-panel { -ms-overflow-style: none; scrollbar-width: none; }
 
 .video-wrapper {
+    position: relative; /* Essential for sound button placement */
     height: 100vh; width: 100%; scroll-snap-align: start; 
     display: flex; justify-content: center; align-items: center;
     will-change: transform; transform: translateZ(0); contain: strict; 
 }
-video { width: 100%; height: 100%; object-fit: contain; }
+video { width: 100%; height: 100%; object-fit: contain; cursor: pointer; }
+
+/* TIKTOK STYLE SOUND BUTTON */
+.sound-btn {
+    position: absolute;
+    bottom: 30px;
+    right: 20px;
+    background-color: rgba(30, 30, 30, 0.7);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+    z-index: 50;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+.sound-btn:hover { background-color: rgba(157, 78, 221, 0.8); transform: scale(1.1); }
+.sound-btn svg { width: 24px; height: 24px; fill: white; }
+
 
 .nav-arrows { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 15px; z-index: 100; }
 .arrow-btn { width: 40px; height: 40px; border-radius: 50%; background-color: rgba(30, 30, 30, 0.7); border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; backdrop-filter: blur(5px); transition: background 0.3s ease, transform 0.2s ease; }
@@ -145,17 +167,37 @@ video { width: 100%; height: 100%; object-fit: contain; }
 .divider { height: 3px; width: 50px; background-color: var(--accent-purple); margin-bottom: 20px; box-shadow: 0 0 10px var(--accent-glow); }
 .description-box p { font-size: 1.1rem; color: var(--text-muted); line-height: 1.6; transition: opacity 0.3s ease; }
 
-/* --- IMAGE MODAL (Lightbox) --- */
+/* --- IMAGE MODAL (Lightbox & Carousel) --- */
 .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.95); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
-.modal-content { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 30px var(--accent-glow); animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+.modal-content { max-width: 90%; max-height: 85%; border-radius: 8px; box-shadow: 0 0 30px var(--accent-glow); animation: zoomIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); object-fit: contain;}
 @keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.close-modal { position: absolute; top: 20px; right: 35px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.3s; }
+.close-modal { position: absolute; top: 20px; right: 35px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: color 0.3s; z-index: 1001; }
 .close-modal:hover { color: var(--accent-purple); }
+
+/* CAROUSEL ARROWS */
+.prev-modal, .next-modal {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 15px;
+    user-select: none;
+    transition: color 0.3s, background-color 0.3s;
+    background-color: rgba(0,0,0,0.4);
+    border-radius: 50%;
+    z-index: 1001;
+}
+.prev-modal { left: 30px; }
+.next-modal { right: 30px; }
+.prev-modal:hover, .next-modal:hover { color: var(--accent-purple); background-color: rgba(0,0,0,0.8); }
 
 /* --- MOBILE RESPONSIVE LAYOUT --- */
 @media screen and (max-width: 768px) {
     .layout-wrapper { display: flex; flex-direction: column; height: 90vh; }
-    .left-panel { display: none; /* Hides desktop left panel */ }
+    .left-panel { display: none; }
     
     .mobile-header {
         display: flex; align-items: center; justify-content: space-between;
@@ -173,10 +215,14 @@ video { width: 100%; height: 100%; object-fit: contain; }
     .video-wrapper { height: 65vh; }
     .nav-arrows { right: 10px; gap: 10px; }
     .arrow-btn { width: 36px; height: 36px; }
+    .sound-btn { bottom: 15px; right: 10px; width: 36px; height: 36px; }
 
     .right-panel { width: 100%; height: 25vh; padding: 20px; border-left: none; border-top: 1px solid #2a2a35; }
     .description-box h2 { font-size: 1.5rem; margin-bottom: 10px; }
     .description-box p { font-size: 0.95rem; }
     
     .grid-overlay { padding: 20px; }
+    
+    .prev-modal { left: 10px; font-size: 25px; padding: 10px; }
+    .next-modal { right: 10px; font-size: 25px; padding: 10px; }
 }
