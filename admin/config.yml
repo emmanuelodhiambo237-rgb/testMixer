@@ -2,7 +2,6 @@ backend:
   name: github
   repo: emmanuelodhiambo237-rgb/testMixer
   branch: main
-  # We are switching to the "Old Reliable" bridge
   base_url: https://github-auth.netlify.app
   auth_endpoint: /auth
 
@@ -11,4 +10,21 @@ public_folder: "images"
 
 collections:
   - name: "portfolio_data"
-# ... (Leave the rest of your file exactly as it is)
+    label: "Portfolio Editor"
+    files:
+      - file: "content.json"
+        label: "Edit Website Content"
+        name: "content"
+        fields:
+          - label: "Gallery Images"
+            name: "gallery"
+            widget: "list"
+            field: { label: "Image", name: "image", widget: "image" }
+            
+          - label: "Videos"
+            name: "videos"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "text", widget: "text" }
+              - { label: "Video File", name: "videoUrl", widget: "file" }
