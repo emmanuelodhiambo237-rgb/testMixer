@@ -1,0 +1,21 @@
+{
+  "gallery": [
+    "images/side image1.jpg",
+    "images/side image2.jpg",
+    "images/side image3.jpg",
+    "images/side image4.jpg",
+    "images/side image5.jpg"
+  ],
+  "videos": [
+    {
+      "title": "The Smoked Old Fashioned",
+      "text": "A dramatic take on a timeless classic. Bourbon infused with cherry wood smoke.",
+      "videoUrl": "videos/Video1.mp4"
+    },
+    {
+      "title": "Neon Margarita",
+      "text": "A vibrant, electric twist on the traditional margarita.",
+      "videoUrl": "videos/Video2.mp4"
+    }
+  ]
+}
