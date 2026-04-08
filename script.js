@@ -14,6 +14,12 @@ const titleElement = document.getElementById('dynamic-title');
 const textElement = document.getElementById('dynamic-text');
 const videoWrappers = document.querySelectorAll('.video-wrapper');
 
+// References for Profile Pictures and Carousel Arrows
+const profilePicDesktop = document.querySelector('.left-panel .profile-pic');
+const profilePicMobile = document.querySelector('.mobile-header .mobile-profile-pic');
+const modalPrevBtn = document.querySelector('.prev-modal');
+const modalNextBtn = document.querySelector('.next-modal');
+
 // ==========================================
 // 2. TIKTOK SOUND LOGIC & VIDEO CLICKS
 // ==========================================
@@ -151,31 +157,69 @@ const sidebarImages = Array.from(document.querySelectorAll('.sidebar-grid .grid-
 const imageUrls = sidebarImages.map(img => img.src);
 let currentImageIndex = 0;
 
+// Function to open gallery modal (non-round, navigation arrows)
 function openModal(index) {
     currentImageIndex = index;
     modalImg.src = imageUrls[currentImageIndex];
+    modalImg.classList.remove('profile-preview'); // Ensure standard styling
+    modalPrevBtn.style.display = 'inline-block'; // Re-show arrows
+    modalNextBtn.style.display = 'inline-block';
     modal.style.display = "flex";
 }
 
+// Function to open profile picture modal (round crop, no navigation)
+function openModalDirectly(src) {
+    modalImg.src = src;
+    modalImg.classList.add('profile-preview'); // Round styling class
+    modalPrevBtn.style.display = 'none'; // Hide carousel arrows
+    modalNextBtn.style.display = 'none';
+    modal.style.display = "flex";
+}
+
+// Function to close modal and reset state
+function closeModalDirectly() {
+    modal.style.display = "none";
+    modalImg.classList.remove('profile-preview'); // Reset round styling
+    modalPrevBtn.style.display = 'inline-block'; // Restore arrows visibility
+    modalNextBtn.style.display = 'inline-block';
+}
+
+// Bind clicks to sidebar gallery images
 sidebarImages.forEach((img, index) => img.addEventListener("click", () => openModal(index)));
 
+// Bind clicks to mobile gallery images
 const mobileImages = document.querySelectorAll('.overlay-grid .grid-image');
 mobileImages.forEach((img, index) => img.addEventListener("click", () => openModal(index)));
 
+// Bind clicks to profile pictures for direct round preview
+[profilePicDesktop, profilePicMobile].forEach(pPic => {
+    if (pPic) {
+        pPic.style.cursor = 'pointer'; // Ensure pointer cursor is visible
+        pPic.addEventListener('click', () => {
+            openModalDirectly(pPic.src);
+        });
+    }
+});
+
+// Left Arrow Math (Loops backward seamlessly, only if not profile preview)
 document.querySelector('.prev-modal').addEventListener('click', (e) => {
     e.stopPropagation();
+    if (modalImg.classList.contains('profile-preview')) return; // No nav if profile preview
     currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
     modalImg.src = imageUrls[currentImageIndex];
 });
 
+// Right Arrow Math (Loops forward seamlessly, only if not profile preview)
 document.querySelector('.next-modal').addEventListener('click', (e) => {
     e.stopPropagation();
+    if (modalImg.classList.contains('profile-preview')) return; // No nav if profile preview
     currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
     modalImg.src = imageUrls[currentImageIndex];
 });
 
-if(closeBtn) closeBtn.addEventListener("click", () => modal.style.display = "none");
-modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+// Use closeModalDirectly for close triggers
+if(closeBtn) closeBtn.addEventListener("click", closeModalDirectly);
+modal.addEventListener("click", (e) => { if (e.target === modal) closeModalDirectly(); });
 
 // ==========================================
 // 7. NAVIGATION ARROWS
