@@ -14,7 +14,6 @@ const titleElement = document.getElementById('dynamic-title');
 const textElement = document.getElementById('dynamic-text');
 const videoWrappers = document.querySelectorAll('.video-wrapper');
 
-// References for Profile Pictures and Carousel Arrows
 const profilePicDesktop = document.querySelector('.left-panel .profile-pic');
 const profilePicMobile = document.querySelector('.mobile-header .mobile-profile-pic');
 const modalPrevBtn = document.querySelector('.prev-modal');
@@ -51,63 +50,11 @@ videoWrappers.forEach(wrapper => {
 });
 
 // ==========================================
-// 3. WINDOW RESIZE PROTECTOR
+// 3. ROCK-SOLID NATIVE SCROLL OBSERVER
 // ==========================================
-let isResizing = false;
-let resizeTimer;
+// Ensure CSS scroll snapping is on permanently
+centerPanel.style.scrollSnapType = 'y mandatory';
 
-window.addEventListener('resize', () => {
-    isResizing = true;
-    centerPanel.style.scrollSnapType = 'none';
-    clearTimeout(resizeTimer);
-    
-    resizeTimer = setTimeout(() => {
-        isResizing = false;
-        centerPanel.style.scrollSnapType = 'y mandatory';
-        
-        videoWrappers.forEach(wrapper => {
-            const video = wrapper.querySelector('video');
-            const rect = wrapper.getBoundingClientRect();
-            if (rect.top >= -rect.height/2 && rect.top <= rect.height/2) {
-                video.play().catch(e => console.log("Waiting for user tap"));
-            }
-        });
-    }, 200);
-});
-
-// ==========================================
-// 4. ENDLESS SCROLL LOGIC
-// ==========================================
-window.addEventListener('load', () => {
-    centerPanel.style.scrollSnapType = 'none';
-    centerPanel.prepend(centerPanel.lastElementChild);
-    centerPanel.scrollTop = centerPanel.clientHeight;
-    centerPanel.style.scrollSnapType = 'y mandatory';
-});
-
-centerPanel.addEventListener('scroll', () => {
-    if (isResizing) return; 
-
-    const itemHeight = centerPanel.clientHeight;
-
-    if (centerPanel.scrollTop === 0) {
-        centerPanel.style.scrollSnapType = 'none';
-        centerPanel.prepend(centerPanel.lastElementChild);
-        centerPanel.scrollTop = itemHeight;
-        setTimeout(() => { centerPanel.style.scrollSnapType = 'y mandatory'; }, 0);
-    }
-    
-    if (centerPanel.scrollTop + itemHeight >= centerPanel.scrollHeight - 2) {
-        centerPanel.style.scrollSnapType = 'none';
-        centerPanel.appendChild(centerPanel.firstElementChild);
-        centerPanel.scrollTop = centerPanel.scrollHeight - (itemHeight * 2);
-        setTimeout(() => { centerPanel.style.scrollSnapType = 'y mandatory'; }, 0);
-    }
-});
-
-// ==========================================
-// 5. VIDEO OBSERVER
-// ==========================================
 const observerOptions = { root: centerPanel, threshold: 0.6 };
 
 const videoObserver = new IntersectionObserver((entries) => {
@@ -115,10 +62,10 @@ const videoObserver = new IntersectionObserver((entries) => {
         const video = entry.target.querySelector('video');
         const index = entry.target.getAttribute('data-index');
 
-        video.muted = globalMuted;
-
         if (entry.isIntersecting) {
-            video.play().catch(e => console.log("Autoplay blocked until user taps"));
+            video.muted = globalMuted;
+            video.play().catch(e => console.log("Browser needs user interaction to autoplay."));
+            
             titleElement.style.opacity = 0;
             textElement.style.opacity = 0;
             
@@ -140,7 +87,7 @@ const videoObserver = new IntersectionObserver((entries) => {
 videoWrappers.forEach(wrapper => videoObserver.observe(wrapper));
 
 // ==========================================
-// 6. LOOPING IMAGE CAROUSEL & MODAL
+// 4. LOOPING IMAGE CAROUSEL & MODAL
 // ==========================================
 const mobileViewBtn = document.getElementById('mobileViewBtn');
 const gridOverlay = document.getElementById('gridOverlay');
@@ -157,72 +104,65 @@ const sidebarImages = Array.from(document.querySelectorAll('.sidebar-grid .grid-
 const imageUrls = sidebarImages.map(img => img.src);
 let currentImageIndex = 0;
 
-// Function to open gallery modal (non-round, navigation arrows)
 function openModal(index) {
     currentImageIndex = index;
     modalImg.src = imageUrls[currentImageIndex];
-    modalImg.classList.remove('profile-preview'); // Ensure standard styling
-    modalPrevBtn.style.display = 'inline-block'; // Re-show arrows
-    modalNextBtn.style.display = 'inline-block';
+    modalImg.classList.remove('profile-preview'); 
+    if(modalPrevBtn) modalPrevBtn.style.display = 'inline-block'; 
+    if(modalNextBtn) modalNextBtn.style.display = 'inline-block';
     modal.style.display = "flex";
 }
 
-// Function to open profile picture modal (round crop, no navigation)
 function openModalDirectly(src) {
     modalImg.src = src;
-    modalImg.classList.add('profile-preview'); // Round styling class
-    modalPrevBtn.style.display = 'none'; // Hide carousel arrows
-    modalNextBtn.style.display = 'none';
+    modalImg.classList.add('profile-preview'); 
+    if(modalPrevBtn) modalPrevBtn.style.display = 'none'; 
+    if(modalNextBtn) modalNextBtn.style.display = 'none';
     modal.style.display = "flex";
 }
 
-// Function to close modal and reset state
 function closeModalDirectly() {
     modal.style.display = "none";
-    modalImg.classList.remove('profile-preview'); // Reset round styling
-    modalPrevBtn.style.display = 'inline-block'; // Restore arrows visibility
-    modalNextBtn.style.display = 'inline-block';
+    modalImg.classList.remove('profile-preview'); 
+    if(modalPrevBtn) modalPrevBtn.style.display = 'inline-block'; 
+    if(modalNextBtn) modalNextBtn.style.display = 'inline-block';
 }
 
-// Bind clicks to sidebar gallery images
 sidebarImages.forEach((img, index) => img.addEventListener("click", () => openModal(index)));
 
-// Bind clicks to mobile gallery images
 const mobileImages = document.querySelectorAll('.overlay-grid .grid-image');
 mobileImages.forEach((img, index) => img.addEventListener("click", () => openModal(index)));
 
-// Bind clicks to profile pictures for direct round preview
 [profilePicDesktop, profilePicMobile].forEach(pPic => {
     if (pPic) {
-        pPic.style.cursor = 'pointer'; // Ensure pointer cursor is visible
-        pPic.addEventListener('click', () => {
-            openModalDirectly(pPic.src);
-        });
+        pPic.style.cursor = 'pointer'; 
+        pPic.addEventListener('click', () => openModalDirectly(pPic.src));
     }
 });
 
-// Left Arrow Math (Loops backward seamlessly, only if not profile preview)
-document.querySelector('.prev-modal').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (modalImg.classList.contains('profile-preview')) return; // No nav if profile preview
-    currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
-    modalImg.src = imageUrls[currentImageIndex];
-});
+if(modalPrevBtn) {
+    modalPrevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (modalImg.classList.contains('profile-preview')) return; 
+        currentImageIndex = (currentImageIndex - 1 + imageUrls.length) % imageUrls.length;
+        modalImg.src = imageUrls[currentImageIndex];
+    });
+}
 
-// Right Arrow Math (Loops forward seamlessly, only if not profile preview)
-document.querySelector('.next-modal').addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (modalImg.classList.contains('profile-preview')) return; // No nav if profile preview
-    currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
-    modalImg.src = imageUrls[currentImageIndex];
-});
+if(modalNextBtn) {
+    modalNextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (modalImg.classList.contains('profile-preview')) return; 
+        currentImageIndex = (currentImageIndex + 1) % imageUrls.length;
+        modalImg.src = imageUrls[currentImageIndex];
+    });
+}
 
-// Use closeModalDirectly for close triggers
 if(closeBtn) closeBtn.addEventListener("click", closeModalDirectly);
 modal.addEventListener("click", (e) => { if (e.target === modal) closeModalDirectly(); });
 
 // ==========================================
-// 7. NAVIGATION ARROWS
+// 5. NAVIGATION ARROWS
 // ==========================================
 const btnUp = document.getElementById('btn-up');
 const btnDown = document.getElementById('btn-down');
